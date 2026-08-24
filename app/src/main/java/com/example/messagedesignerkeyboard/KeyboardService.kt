@@ -1,7 +1,10 @@
 package com.example.messagedesignerkeyboard
 
 import android.inputmethodservice.InputMethodService
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.view.View
+import android.view.Gravity
 import android.view.inputmethod.InputConnection
 import android.widget.Button
 import android.widget.LinearLayout
@@ -10,32 +13,64 @@ class KeyboardService : InputMethodService() {
 
     override fun onCreateInputView(): View {
 
-        val layout = LinearLayout(this)
-        layout.orientation = LinearLayout.VERTICAL
+        val keyboard = LinearLayout(this)
+        keyboard.orientation = LinearLayout.VERTICAL
+        keyboard.setPadding(8, 8, 8, 8)
+        keyboard.setBackgroundColor(Color.rgb(245, 245, 245))
 
-        val row1 = LinearLayout(this)
-        row1.orientation = LinearLayout.HORIZONTAL
+        addRow(
+            keyboard,
+            arrayOf("1", "2", "3", "4", "5")
+        )
 
-        val button1 = Button(this)
-        button1.text = "Hello"
+        addRow(
+            keyboard,
+            arrayOf("6", "7", "8", "9", "0")
+        )
 
-        button1.setOnClickListener {
-            val inputConnection: InputConnection? = currentInputConnection
-            inputConnection?.commitText("Hello", 1)
+        addRow(
+            keyboard,
+            arrayOf("Hello", "Hi", "Thanks")
+        )
+
+        addRow(
+            keyboard,
+            arrayOf("❤️", "😊", "👍", "🔥")
+        )
+
+        return keyboard
+    }
+
+    private fun addRow(
+        keyboard: LinearLayout,
+        texts: Array<String>
+    ) {
+        val row = LinearLayout(this)
+        row.orientation = LinearLayout.HORIZONTAL
+        row.gravity = Gravity.CENTER
+
+        for (text in texts) {
+
+            val button = Button(this)
+            button.text = text
+            button.textSize = 16f
+
+            val params = LinearLayout.LayoutParams(
+                0,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                1f
+            )
+
+            params.setMargins(4, 4, 4, 4)
+            button.layoutParams = params
+
+            button.setOnClickListener {
+                currentInputConnection?.commitText(text, 1)
+            }
+
+            row.addView(button)
         }
 
-        val button2 = Button(this)
-        button2.text = "Hi"
-
-        button2.setOnClickListener {
-            currentInputConnection?.commitText("Hi", 1)
-        }
-
-        row1.addView(button1)
-        row1.addView(button2)
-
-        layout.addView(row1)
-
-        return layout
+        keyboard.addView(row)
     }
 }
